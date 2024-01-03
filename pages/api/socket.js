@@ -1,7 +1,7 @@
 import { Server } from 'socket.io';
 
 const SocketHandler = (req, res) => {
-  console.log('Called apui');
+  console.log('Called api');
   if (res.socket.server.io) {
     console.log('Socket is already running');
   } else {
@@ -10,6 +10,25 @@ const SocketHandler = (req, res) => {
 
     io.on('connection', (socket) => {
       console.log('Server is connected');
+
+      socket.on('join-room', (roomId, userId) => {
+        console.log(`A new user ${userId} joined room ${roomId}`);
+        socket.join(roomId);
+        socket.broadcast.to(roomId).emit('user-connected', userId);
+      });
+
+      socket.on('user-toggle-audio', (userId, roomId) => {
+        socket.join(roomId);
+        socket.broadcast.to(roomId).emit('user-toggle-audio', userId);
+      });
+      socket.on('user-toggle-video', (userId, roomId) => {
+        socket.join(roomId);
+        socket.broadcast.to(roomId).emit('user-toggle-video', userId);
+      });
+      socket.on('user-leave', (userId, roomId) => {
+        socket.join(roomId);
+        socket.broadcast.to(roomId).emit('user-leave', userId);
+      });
     });
   }
   res.end();
