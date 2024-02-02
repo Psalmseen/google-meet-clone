@@ -13,7 +13,10 @@ const usePeer = () => {
     if (isPeerSet.current || !roomId || !socket) return;
     isPeerSet.current = true;
     (async function initPeer() {
-      const myPeer = new (await import('peerjs')).default();
+      const myPeer = new (await import('peerjs')).default(undefined, {
+        host: 'localhost',
+        port: 9000,
+      });
       setPeer(myPeer);
 
       myPeer.on('open', (id) => {
